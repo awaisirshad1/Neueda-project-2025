@@ -1,6 +1,8 @@
 package main
 
 import (
+	//routes
+	"backend/api"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -29,7 +31,7 @@ func main() {
 			"status": "ok",
 		})
 	})
-
+	api.RegisterInsightsRoutes(r)
 	// Start server on port 8080
 	r.Run(":8080")
 }
