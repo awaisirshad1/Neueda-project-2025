@@ -1,6 +1,7 @@
 package main
 
 import (
+	//routes
 	"backend/api"
 	"backend/chatbot"
 	"fmt"
@@ -34,8 +35,8 @@ func main() {
 		})
 	})
 
+	api.RegisterInsightsRoutes(r)
 	api.RegisterMortgageCalcRoute(r)
-
 	// Start server on port 8080
 	r.Run(":8080")
 	http.HandleFunc("/chat", chatbot.ChatHandler)
