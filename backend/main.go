@@ -2,8 +2,11 @@ package main
 
 import (
 	"backend/api"
+	"backend/chatbot"
+	"fmt"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
 	"time"
 )
@@ -35,4 +38,7 @@ func main() {
 
 	// Start server on port 8080
 	r.Run(":8080")
+	http.HandleFunc("/chat", chatbot.ChatHandler)
+	fmt.Println("Server started at :8080")
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }
