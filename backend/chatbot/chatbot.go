@@ -1,4 +1,4 @@
-package main
+package chatbot
 
 import (
     "context"
@@ -11,7 +11,7 @@ import (
     "github.com/sashabaranov/go-openai"
 )
 
-func chatHandler(w http.ResponseWriter, r *http.Request) {
+func ChatHandler(w http.ResponseWriter, r *http.Request) {
     // Only allow POST requests
     if r.Method != http.MethodPost {
         http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
