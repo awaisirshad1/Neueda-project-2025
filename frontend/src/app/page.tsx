@@ -8,6 +8,8 @@ import { MortgageResultsCard } from "@/components/mortgage/mortgage-results-card
 import { AmortizationChart } from "@/components/mortgage/amortization-chart";
 import type { MortgageResponse } from "@/lib/mortgage";
 import { useToast } from "@/hooks/use-toast";
+import { MortgageChatbot } from "@/components/mortgage/mortgage-chatbot";
+
 
 export default function MortgageMaestroPage() {
   const [result, setResult] = useState<MortgageResponse | null>(null);
@@ -40,7 +42,7 @@ export default function MortgageMaestroPage() {
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 items-start">
-        <div className="md:col-span-1">
+        <div className="md:col-span-1 space-y-6">
           <MortgageForm onSubmit={handleFormSubmit} />
         </div>
 
@@ -55,6 +57,7 @@ export default function MortgageMaestroPage() {
         {!result && (
           <div className="md:col-span-2 space-y-6 md:space-y-8">
             <AmortizationChart data={[]} loanTermInYears={0} />
+            <MortgageChatbot />
           </div>
         )}
       </div>
