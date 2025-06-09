@@ -2,12 +2,10 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BadgeDollarSign, TrendingUp, Landmark } from "lucide-react";
+import type { MortgageResponse } from "@/lib/mortgage";
 
 interface MortgageResultsCardProps {
-  monthlyPayment: number;
-  totalInterestPaid: number;
-  totalAmountPaid: number;
-  loanAmountAfterDownPayment: number;
+  data: MortgageResponse;
 }
 
 const formatCurrency = (value: number) => {
@@ -17,12 +15,10 @@ const formatCurrency = (value: number) => {
   }).format(value);
 };
 
-export function MortgageResultsCard({
-  monthlyPayment,
-  totalInterestPaid,
-  totalAmountPaid,
-  loanAmountAfterDownPayment,
-}: MortgageResultsCardProps) {
+export function MortgageResultsCard({ data }: MortgageResultsCardProps) {
+  const { monthlyPayment, principal, totalPaid } = data;
+  const totalInterestPaid = totalPaid - principal;
+
   return (
     <Card className="w-full shadow-lg">
       <CardHeader>
@@ -44,11 +40,11 @@ export function MortgageResultsCard({
 
         <div className="flex justify-between items-center p-3 bg-secondary/50 rounded-md">
           <div className="flex items-center">
-             <Landmark className="mr-2 h-5 w-5 text-primary" />
+            <Landmark className="mr-2 h-5 w-5 text-primary" />
             <span className="text-sm font-medium">Loan Amount (after Down Payment)</span>
           </div>
           <span className="text-lg font-semibold">
-            {formatCurrency(loanAmountAfterDownPayment)}
+            {formatCurrency(principal)}
           </span>
         </div>
 
@@ -68,7 +64,7 @@ export function MortgageResultsCard({
             <span className="text-sm font-medium">Total Amount Paid</span>
           </div>
           <span className="text-lg font-semibold">
-            {formatCurrency(totalAmountPaid)}
+            {formatCurrency(totalPaid)}
           </span>
         </div>
       </CardContent>

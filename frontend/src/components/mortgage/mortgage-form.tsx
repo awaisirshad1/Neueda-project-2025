@@ -24,8 +24,11 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { mortgageFormSchema, type MortgageFormValues } from "@/lib/validators";
 
+import { fetchMortgageCalculation } from "@/lib/mortgage";
+import type { MortgageRequest, MortgageResponse } from "@/lib/mortgage";
+
 interface MortgageFormProps {
-  onSubmit: (values: MortgageFormValues) => void;
+  onSubmit: (values: MortgageResponse) => void;
   defaultValues?: Partial<MortgageFormValues>;
 }
 
@@ -40,6 +43,23 @@ export function MortgageForm({ onSubmit, defaultValues }: MortgageFormProps) {
     },
   });
 
+  const handleFormSubmit = async (values: MortgageFormValues) => {
+    const request: MortgageRequest = {
+      loanAmount: values.loanAmount,
+      interestRate: values.interestRate,
+      termYears: values.loanTerm,
+      ...(values.downPayment ? { downPayment: values.downPayment } : {}),
+    };
+
+    try {
+      const response = await fetchMortgageCalculation(request);
+      onSubmit(response);
+    } catch (error) {
+      console.error("Mortgage calculation failed:", error);
+      // Optional: Display toast or error banner here
+    }
+  };
+
   return (
     <Card className="w-full shadow-lg">
       <CardHeader>
@@ -50,7 +70,8 @@ export function MortgageForm({ onSubmit, defaultValues }: MortgageFormProps) {
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          {/* Changed onSubmit to handleFormSubmit */}
+          <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-6">
             <FormField
               control={form.control}
               name="loanAmount"
@@ -87,7 +108,7 @@ export function MortgageForm({ onSubmit, defaultValues }: MortgageFormProps) {
                       step="0.01"
                       placeholder="e.g., 5.25"
                       {...field}
-                       onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                      onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                     />
                   </FormControl>
                   <FormMessage />
@@ -108,7 +129,7 @@ export function MortgageForm({ onSubmit, defaultValues }: MortgageFormProps) {
                       type="number"
                       placeholder="e.g., 30"
                       {...field}
-                       onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                      onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
                     />
                   </FormControl>
                   <FormMessage />
@@ -129,7 +150,7 @@ export function MortgageForm({ onSubmit, defaultValues }: MortgageFormProps) {
                       type="number"
                       placeholder="e.g., 20000"
                       {...field}
-                       onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                      onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                     />
                   </FormControl>
                   <FormMessage />

@@ -38,7 +38,7 @@ export const generateAmortizationSchedule = (
   loanTermInYears: number,
   monthlyPayment: number
 ): AmortizationDataPoint[] => {
-  if (loanAmount <= 0 || annualInterestRate < 0 || loanTermInYears <= 0 || monthlyPayment <=0) {
+  if (loanAmount <= 0 || annualInterestRate < 0 || loanTermInYears <= 0 || monthlyPayment <= 0) {
     return [];
   }
 
@@ -52,17 +52,15 @@ export const generateAmortizationSchedule = (
   for (let i = 1; i <= numberOfPayments; i++) {
     const interestForMonth = remainingBalance * monthlyInterestRate;
     let principalForMonth = monthlyPayment - interestForMonth;
-    
-    if (remainingBalance < monthlyPayment) { // Final payment adjustment
-        principalForMonth = remainingBalance;
-        // monthlyPayment = remainingBalance + interestForMonth; // This would change the last payment amount, not typical for fixed mortgages
+
+    if (remainingBalance < monthlyPayment) {
+      principalForMonth = remainingBalance;
     }
 
     remainingBalance -= principalForMonth;
     cumulativeInterest += interestForMonth;
     cumulativePrincipal += principalForMonth;
 
-    // Ensure remaining balance doesn't go below zero due to floating point inaccuracies
     if (remainingBalance < 0) remainingBalance = 0;
 
     schedule.push({
@@ -74,8 +72,9 @@ export const generateAmortizationSchedule = (
       totalPrincipalPaidCumulative: parseFloat(cumulativePrincipal.toFixed(2)),
     });
 
-    if (remainingBalance <= 0) break; // Loan paid off
+    if (remainingBalance <= 0) break;
   }
+
   return schedule;
 };
 
@@ -86,3 +85,38 @@ export const calculateTotalInterestPaid = (amortizationSchedule: AmortizationDat
 export const calculateTotalAmountPaid = (loanAmount: number, totalInterestPaid: number): number => {
   return loanAmount + totalInterestPaid;
 };
+
+
+// Backend Integration
+
+export interface MortgageRequest {
+  loanAmount: number;
+  interestRate: number;
+  termYears: number;
+  downPayment?: number;
+}
+
+export interface MortgageResponse {
+  principal: number;
+  monthlyPayment: number;
+  totalPayments: number;
+  totalPaid: number;
+}
+
+export async function fetchMortgageCalculation(
+  request: MortgageRequest
+): Promise<MortgageResponse> {
+  const response = await fetch('http://localhost:9002/mortgage', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(request),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch mortgage calculation');
+  }
+
+  return await response.json();
+}
