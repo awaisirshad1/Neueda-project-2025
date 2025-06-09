@@ -1,4 +1,4 @@
-module Project2025
+module backend
 
 go 1.24
 
